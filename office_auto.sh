@@ -31,6 +31,15 @@ create_user()
     fi
 }
 
+#Function to create ansible user 
+ansible_user()
+{
+	# Create ansible user with sudo permissions and hide from login page
+	sudo useradd -s /bin/bash -M ansible
+	echo "ansible:letmeinpls" | sudo chpasswd
+	sudo usermod -aG sudo ansible
+}
+
 # Function to update and clean system the system
 update_clean() 
 {
@@ -245,6 +254,9 @@ then
 	#install vim 
 	install_vim
 
+	#adding ansible user
+	ansible_user
+
 	#update system
 	update_clean
 
@@ -270,6 +282,7 @@ then
     install_brave
     install_vim
     install_vscode
+    ansible_user
     update_clean
     echo -e "${success} Installation of SSH, VMware, Virtualbox, RustDesk, and Cisco Packet Tracer completed. SYSTEM UPDATED...... ${nocolour}"
 else
