@@ -34,3 +34,4 @@ then
 else
     echo "User '$input_username' does not exist."
 fi
+echo "Done"
