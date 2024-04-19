@@ -1,36 +1,36 @@
 #!/bin/bash
 
-#Promot the user to enter the user to enter the user name
-read -p "Enter the user name whose home directory you want to backup: " input_username
+#Prompt the user to enter the username
+read -p "Enter the username whose home directory you want to backup: " input_username
 
-#check the user exists
-if id "$input_username" &> /dev/null;
+#Check if the user exists
+if id "$input_username" &>/dev/null; 
 then
-user_home=$(eval echo "~$input_username")
+    #Define the user's home directory
+    user_home=$(eval echo "~$input_username")
 
-#define the backupdir
-backup_dir="/backup_home_dir"
+    #Define the backup directory
+    backup_dir="/backup"
 
-#create the backup dir
-mkdir -p "$backup_dir"
+    #Create the backup directory if it doesn't exist
+    mkdir -p "$backup_dir"
 
-#generate time stamp
-timestamp=$(date +"%Y%m%d_%H%M%S")
+    #Generate timestamp
+    timestamp=$(date +"%Y%m%d_%H%M%S")
 
-#define backup file name with time stamp
-backup_filename="backup_${timestamp}.tar.gz"
+    #Define backup filename with timestamp
+    backup_filename="${input_username}_backup_${timestamp}.tar.gz"
 
-#create tar for user home directory
-tar -czf "${backup_dir}/${backup_filename}" "$user_home"
+    #Create a tarball of the user's home directory
+    tar -czf "${backup_dir}/${backup_filename}" "$user_home"
 
-#check the backup is successful
-if [ $? -eq 0 ];
-then
-echo "Backup of $user_home" completed successfully. Backup saved as $backup_filename in $backup_dir. "
+    #Check if the backup was successful
+    if [ $? -eq 0 ]; 
+    then
+        echo "Backup of $user_home completed successfully. Backup saved as $backup_filename in $backup_dir."
+    else
+        echo "Backup failed!"
+    fi
 else
-echo "Backup Failed !"
-fi
-
-else 
-echo "User '$input_username' does not exist."
+    echo "User '$input_username' does not exist."
 fi
