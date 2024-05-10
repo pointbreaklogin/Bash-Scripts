@@ -34,9 +34,9 @@ create_user()
 #Function to create ansible user 
 ansible_user()
 {
-	# Create ansible user with sudo permissions and hide from login page
-	sudo useradd -s /bin/bash -M ansible
-	echo "ansible:letmeinpls" | sudo chpasswd
+	# Create ansible user with sudo permissions hide user in the login screan(create system user)
+	sudo useradd -r -s /bin/bash -M ansible
+	echo "ansible:ansible" | sudo chpasswd
 	sudo usermod -aG sudo ansible
 }
 
