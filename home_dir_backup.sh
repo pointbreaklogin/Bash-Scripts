@@ -1,36 +1,38 @@
 #!/bin/bash
 
-#Prompt the user to enter the username
-read -p "Enter the username whose home directory you want to backup: " input_username
-
-#Check if the user exists
-if id "$input_username" &>/dev/null; 
+#check weather script as root/ or with sudo
+if [ "$EUID" -ne 0 ];
 then
-    #Define the user's home directory
-    user_home=$(eval echo "~$input_username")
-
-    #Define the backup directory
-    backup_dir="/backup"
-
-    #Create the backup directory if it doesn't exist
-    mkdir -p "$backup_dir"
-
-    #Generate timestamp
-    timestamp=$(date +"%Y%m%d_%H%M%S")
-
-    #Define backup filename with timestamp
-    backup_filename="${input_username}_backup_${timestamp}.tar.gz"
-
-    #Create a tarball of the user's home directory
-    tar -czf "${backup_dir}/${backup_filename}" "$user_home"
-
-    #Check if the backup was successful
-    if [ $? -eq 0 ]; 
-    then
-        echo "Backup of $user_home completed successfully. Backup saved as $backup_filename in $backup_dir."
-    else
-        echo "Backup failed!"
-    fi
-else
-    echo "User '$input_username' does not exist."
+	echo -e "${error}Please run as root.${nocolour}"
+	exit 1
 fi
+
+#Set variables
+SOURCE="/home/abhiram"
+DESTINATION="/user_home_backups"
+TIMESTAMP=$(date +"%Y-%m-%d_%H-%M-%S")
+BACKUP_NAME="backup_abhiram_$TIMESTAMP.tar.gz"
+
+check_install_pv() {
+    if ! command -v pv &> /dev/null; then
+        echo "pv is not installed. Installing now..."
+        sudo apt-get update
+        sudo apt-get install -y pv
+    else
+        echo "pv is already installed."
+    fi
+}
+
+check_install_pv
+
+
+#Create the backup and show progress
+echo "Starting backup of $SOURCE to $DESTINATION/$BACKUP_NAME..."
+tar --exclude="$SOURCE/.cache" --exclude="$SOURCE/.config" -czf - -C "$SOURCE" . | pv -s $(du -sb "$SOURCE" | awk '{print $1}') > "$DESTINATION/$BACKUP_NAME"
+
+#Remove backups older than 3 days
+find "$DESTINATION" -type f -name "backup_abhiram_*.tar.gz" -mtime +3 -exec rm {} \;
+
+#Completion message
+echo "Backup completed successfully! File: $DESTINATION/$BACKUP_NAME"
+
