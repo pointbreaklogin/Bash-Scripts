@@ -25,13 +25,11 @@ To use the scripts, simply run them from the command line. For example, to run t
 ./office_auto.sh  OR  bash office_auto.sh
 ```
 
-## Contributing
-
-If you would like to contribute to this repository, please feel free to submit pull requests with your changes.
 
 ## License
 
-These Repository are open-source and freely available for anyone to use. Please feel free to modify and incorporate them into your own projects. If you find them useful.
+##### Just a simple code bruh
+
 
 <3 happyday
 
