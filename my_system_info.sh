@@ -1,10 +1,10 @@
 #!/bin/bash
 
-# Get the current user and full name
+#Get the current user and full name
 username=$(whoami)
 full_name=$(getent passwd "$username" | cut -d ':' -f5 | cut -d ',' -f1)
 
-# Get system information
+#Get system information
 hostname=$(hostname)
 cpu_model=$(lscpu | grep 'Model name' | sed 's/Model name:[ \t]*//')
 cpu_cores=$(nproc)
@@ -16,7 +16,7 @@ users=$(who | wc -l)
 disk_used=$(df -h / | awk 'NR==2 {print $3}')
 ip_address=$(hostname -I | awk '{print $1}')
 
-# Output the report
+#Output the report
 echo ""
 echo "System Information Report"
 echo "========================="
