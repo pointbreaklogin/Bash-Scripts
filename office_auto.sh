@@ -14,7 +14,6 @@ then
 	exit 1
 fi
 
-
 #Function to create a user with a specified username and password
 create_user() 
 {

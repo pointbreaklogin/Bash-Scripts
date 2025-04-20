@@ -1,4 +1,4 @@
-# Automated IT Infrastructure Orchestration
+# Automated IT Infrastructure
 This repository contains a collection of Bash automation scripts for various tasks. IT allow you to encapsulate a series of commands into a single file, saving you time and effort by eliminating the need to manually execute the commands each time.
 
 ## Installation
@@ -24,7 +24,6 @@ To use the scripts, simply run them from the command line. For example, to run t
 ```bash
 ./office_auto.sh  OR  bash office_auto.sh
 ```
-
 
 ## License
 
