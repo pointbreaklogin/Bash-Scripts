@@ -21,5 +21,4 @@ jobs:
 
       - name: Run ShellCheck
         run: |
-          # Check files with shebang (#!/bin/bash) OR all files without extensions
-          find . -type f \( -exec grep -qE '^#!.*bash' {} \; -o -exec grep -qE '^#!.*sh' {} \; \) -print0 | xargs -0 shellcheck --external-sources --severity=warning
+          find . -type f \( -exec grep -qE '^#!.*bash' {} \; -o -exec grep -qE '^#!.*sh' {} \; \) -not -path "./.git/*" -print0 | xargs -0 shellcheck --external-sources --severity=warning
