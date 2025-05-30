@@ -1,37 +1,27 @@
 name: ShellCheck Linter
 
-# Controls when the workflow will run
 on:
-  push: # Run on every push to any branch
-    branches:
-      - main  # Or your default branch, e.g., master
-      - '*'   # Run on pushes to all branches
-  pull_request: # Run on pull requests targeting the main branch
-    branches:
-      - main  # Or your default branch
+  push:
+    branches: [ '*' ]  # All branches
+  pull_request:
+    branches: [ main ]  # Only PRs to main
 
 jobs:
   shellcheck:
     name: Run ShellCheck
-    runs-on: ubuntu-latest # Use the latest Ubuntu runner
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4 # Action to checkout your repository's code
+        uses: actions/checkout@v4
 
-      - name: Install ShellCheck
-        run: sudo apt-get update && sudo apt-get install -y shellcheck
-        # For macOS runners, you might use: brew install shellcheck
+      - name: Install ShellCheck (latest)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y xz-utils
+          wget -qO- "https://github.com/koalaman/shellcheck/releases/download/stable/shellcheck-stable.linux.x86_64.tar.xz" | tar -xJv
+          sudo mv shellcheck-*/shellcheck /usr/local/bin/
 
       - name: Run ShellCheck
-        # This command finds all .sh files and files with a sh shebang
-        # and runs shellcheck on them.
-        # Adjust the find command if your scripts have different extensions
-        # or no extensions but are executable.
         run: |
-          find . -type f \( -name "*.sh" -o -path "*/bin/*" -o -path "*/scripts/*" -o -iname "*.*sh" -o -exec grep -qE '^#!.*sh' {} \; \) -print0 | xargs -0 shellcheck
-          # A simpler version if all your scripts end with .sh:
-          # shellcheck **/*.sh
-        # If you want the job to fail if ShellCheck finds issues,
-        # ShellCheck will exit with a non-zero status code, which
-        # GitHub Actions interprets as a failure by default.
+          shellcheck --external-sources --severity=warning **/*.sh
