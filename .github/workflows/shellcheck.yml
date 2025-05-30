@@ -2,20 +2,17 @@ name: ShellCheck Linter
 
 on:
   push:
-    branches: [ '*' ]  # All branches
+    branches: [ '*' ]
   pull_request:
-    branches: [ main ]  # Only PRs to main
+    branches: [ main ]
 
 jobs:
   shellcheck:
-    name: Run ShellCheck
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Install ShellCheck (latest)
+      - name: Install ShellCheck
         run: |
           sudo apt-get update
           sudo apt-get install -y xz-utils
@@ -24,4 +21,5 @@ jobs:
 
       - name: Run ShellCheck
         run: |
-          shellcheck --external-sources --severity=warning **/*.sh
+          # Check files with shebang (#!/bin/bash) OR all files without extensions
+          find . -type f \( -exec grep -qE '^#!.*bash' {} \; -o -exec grep -qE '^#!.*sh' {} \; \) -print0 | xargs -0 shellcheck --external-sources --severity=warning
