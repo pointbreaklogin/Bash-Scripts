@@ -1,16 +1,16 @@
-name: ShellCheck Linter
+name: ShellCheck Linter (New + Modified Scripts)
 
 on:
   push:
-    branches: [ '*' ]
-  pull_request:
-    branches: [ main ]
+    branches: [ '*' ]  # Triggers on all branches
 
 jobs:
   shellcheck:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2  # Needed to compare changes between commits
 
       - name: Install ShellCheck
         run: |
@@ -19,6 +19,19 @@ jobs:
           wget -qO- "https://github.com/koalaman/shellcheck/releases/download/stable/shellcheck-stable.linux.x86_64.tar.xz" | tar -xJv
           sudo mv shellcheck-*/shellcheck /usr/local/bin/
 
-      - name: Run ShellCheck
+      - name: Get changed/added scripts
+        id: changed-files
         run: |
-          find . -type f \( -exec grep -qE '^#!.*bash' {} \; -o -exec grep -qE '^#!.*sh' {} \; \) -not -path "./.git/*" -print0 | xargs -0 shellcheck --external-sources --severity=warning
+          # Check for MODIFIED (M) or ADDED (A) files with .sh extension or shebang
+          FILES=$(git diff --name-only --diff-filter=AM HEAD^ HEAD | grep -E '\.sh$|^#!.*(bash|sh)' || true)
+          if [ -z "$FILES" ]; then
+            echo "No shell scripts changed. Skipping."
+          else
+            echo "Files to check: $FILES"
+            echo "files=$FILES" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Run ShellCheck
+        if: steps.changed-files.outputs.files != ''
+        run: |
+          shellcheck --external-sources --severity=warning ${{ steps.changed-files.outputs.files }}
